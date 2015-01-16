@@ -1,5 +1,3 @@
-import java.io.*;
-import java.util.*;
 
 abstract class Employee {
    String name;
@@ -11,6 +9,67 @@ abstract class Employee {
    void   setHours(double hrs) {}
    void   setSales(double sales) {}
    void   setSalary(double salary) { System.out.println("NO!"); }
+}
+
+class EmployeeList {
+    private Object[] array;
+    private int size = 0;
+    private int head = 0;
+    private int tail = 0;
+    
+    public EmployeeList(int size) {
+    array = new Object[size];
+    }
+    
+    public void enqueue (Object obj) {
+        if (size == array.length)
+            throw new IllegalStateException("Queue is full. Cannot add.");
+           
+        array[tail] = obj;
+        tail = (tail + 1) % array.length;
+        size++;
+    }
+    
+    
+    
+    Employee find (String nm) {
+        for (int i = 0; i < array.length && array[i] != null; i++)
+            if (((Employee) (array[i])).name.equals(nm))
+                return (Employee) array[i];  
+        return null;
+    }
+    
+    void setHours(String nm, double hrs) {
+        Employee employee;
+        if ((employee = find(nm)) != null)
+            employee.setHours(hrs);
+    }
+    
+    void setSalary(String nm, double salary) {
+        Employee employee;
+        if ((employee = find(nm)) != null)
+            employee.setSalary(salary);
+    }
+    
+    void setSales(String nm, double sales) {
+        Employee employee;
+        if ((employee = find(nm)) != null) 
+            employee.setSales(sales);
+    }
+    
+    double payroll() {
+        double total = 0;
+        for (int i = 0; i < array.length && array[i] != null; i++)
+            total += ((Employee)(array[i])).computePay();
+        return total;
+    }
+    
+    void display() {
+        for (int i = 0; i < array.length && array[i] != null; i++)
+            ((Employee)(array[i])).display();  
+        System.out.println();
+    }
+    
 }
 
 class WageEmployee extends Employee {
@@ -44,9 +103,9 @@ class SalesPerson extends WageEmployee {
    void setCommission(double comm) { commission = comm; }
    
    void setSales(double sales) { SalesMade = sales; }
-	
+   
    double computePay() { return commission*SalesMade; }
-	
+   
    void display() {
       System.out.println("Name: "+name+"\tCommission: "+commission
                           +"\tSales: "+SalesMade);
@@ -57,13 +116,13 @@ class Manager extends Employee {
    double monthlysalary;
 
    Manager () { super(""); }
-	
+   
    Manager(String nm, double w)  { super(nm); monthlysalary = w; }
-	
+   
    void setSalary(double salary) { monthlysalary = salary; }
-	
+   
    double computePay()           { return monthlysalary; }
-	
+   
    void display() {
       System.out.println("Name: "+name+"\tMonthly Salary: "+
                           monthlysalary);
@@ -83,15 +142,15 @@ class SalesManager extends SalesPerson implements ManagerInterface {
    public double managerComputePay() {
       return monthlysalary;
    }
-	
+   
    double computePay() {
       System.out.println("SalesManager: " + name + " " +
-			 super.computePay()+managerComputePay());
+          super.computePay()+managerComputePay());
       return super.computePay() + managerComputePay();
    }
 
    void setSalary (double s) { monthlysalary = s; }
-	
+   
    public void managerDisplay() {
       System.out.println("Name: "+name+"\tMonthly Salary: "+monthlysalary);
    }
@@ -104,8 +163,7 @@ class SalesManager extends SalesPerson implements ManagerInterface {
 
 public class Wages {
    public static void main(String argv[]) {
-      /***
-      EmployeeList emp = new EmployeeList();
+      EmployeeList emp = new EmployeeList(12);
       emp.enqueue(new SalesManager("Gee", 1000));
       emp.enqueue(new SalesManager("Gal", 1000));
       emp.enqueue(new SalesManager("Gem", 1000));
@@ -118,7 +176,7 @@ public class Wages {
       emp.enqueue(new Programmer("Linda", 7));
       emp.enqueue(new Programmer("Larry", 5));
       emp.enqueue(new Programmer("Lewis", 3));
-		
+      
       emp.setHours("Linda", 35);
       emp.setHours("Larry", 23);
       emp.setHours("Lewis", 3);
@@ -133,6 +191,5 @@ public class Wages {
       emp.setSalary("Gem", 3000);
       emp.display();
       System.out.println("Payroll: "+emp.payroll());
-      ***/
    }
 }
