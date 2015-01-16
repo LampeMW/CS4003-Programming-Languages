@@ -1,3 +1,10 @@
+/*
+Lab 1 - Wages
+Matt Lampe
+M03516707
+CS4003 
+1/16/2015
+*/
 
 abstract class Employee {
    String name;
