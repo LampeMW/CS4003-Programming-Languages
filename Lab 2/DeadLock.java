@@ -1,10 +1,11 @@
-import java.applet.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+/*
+*  Lab 2 - Deadlock
+*  Matt Lampe
+*  M03516707
+*  CS4003
+*  2/2/2015
+*/
 
-// Attempt at a simple handshake.  Girl pings Boy, gets confirmation.
-// Then Boy pings girl, get confirmation.
 class Monitor {
    String name;
 	
@@ -12,18 +13,23 @@ class Monitor {
 		   
    public String getName() {  return this.name; }
 				
-   // Girl thread invokes ping, asks Boy to confirm.  But Boy invokes ping,
-   // and asks Girl to confirm.  Neither Boy nor Girl can give time to their
-   // confirm call because they are stuck in ping.  Hence the handshake 
-   // cannot be completed.
    public synchronized void ping (Monitor p) {
-      System.out.println(this.name + " (ping): pinging " + p.getName());
+      p.release(this);
+       try {
+           wait();
+       } catch (InterruptedException ex) {}
+      System.out.println(this.name+ " (ping): asking " + p.getName() + " to confirm");
       p.confirm(this);
       System.out.println(this.name + " (ping): got confirmation");
+      p.release(this);
    }
 				
    public synchronized void confirm (Monitor p) {
       System.out.println(this.name+" (confirm): confirm to "+p.getName());
+   }
+
+   public synchronized void release (Monitor p) {
+      notify();
    }
 }
 
@@ -35,7 +41,10 @@ class Runner extends Thread {
       this.m2 = m2; 
    }
 							
-   public void run () {  m1.ping(m2);  }
+   public void run () {  
+       System.out.println(m1.getName() + " (ping): pinging " + m2.getName());
+       m1.ping(m2);  
+   }
 }
 									
 public class DeadLock {
