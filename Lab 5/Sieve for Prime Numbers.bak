@@ -1,0 +1,14 @@
+(define int-builder
+  (lambda (n)
+    (if (= n 0)
+        '()
+        (append (int-builder (- n 1))
+                (list n)))))
+
+(define filter-out-mults
+  (lambda (num lst)
+    (if (null? lst)
+        '()
+        (if (= (modulo (car lst) num) 0)
+            (filter-out-mults num (cdr lst))
+            (cons (car lst) (filter-out-mults num (cdr lst)))))))
